@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" crossorigin="anonymous">
 
-  <!-- Added: Inter font + Gemini-like approximation CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -46,7 +45,6 @@ html, body {
   padding: 2rem 1rem;
 }
 
-/* Typography */
 h1.display-1 {
   font-size: 2.4rem;
   font-weight: 700;
@@ -61,13 +59,11 @@ h2.display-6 {
   margin-bottom: 2rem;
 }
 
-/* Narrative width */
 .narrative {
   max-width: 720px;
   margin: 0 auto;
 }
 
-/* Advanced Settings (Gemini-inspired glass card) */
 #task-form .card:first-of-type {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(12px);
@@ -97,7 +93,6 @@ h2.display-6 {
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
-/* Buttons */
 .btn-primary {
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
   border: none;
@@ -114,7 +109,6 @@ h2.display-6 {
   border-radius: 9999px;
 }
 
-/* Inputs */
 .form-control {
   border-radius: 12px;
   border: 1px solid rgba(0,0,0,0.08);
@@ -131,7 +125,6 @@ h2.display-6 {
   box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
-/* Example questions */
 .list-group-item {
   border-radius: 12px;
   border: 1px solid rgba(0,0,0,0.04);
@@ -190,7 +183,6 @@ h2.display-6 {
 </head>
 
 <body>
-  <!-- Splash Screen -->
   <div id="splash-screen">
     <div class="splash-content">
       <div id="splash-icon">💡</div>
@@ -247,7 +239,6 @@ h2.display-6 {
   <script src="https://cdn.jsdelivr.net/npm/@gramex/ui@0.3/dist/dark-theme.js" type="module"></script>
   
   <script type="module">
-    /* globals bootstrap */
     import { render, html } from "https://cdn.jsdelivr.net/npm/lit-html@3/+esm";
     import { unsafeHTML } from "https://cdn.jsdelivr.net/npm/lit-html@3/directives/unsafe-html.js";
     import { asyncLLM } from "https://cdn.jsdelivr.net/npm/asyncllm@2";
@@ -255,7 +246,6 @@ h2.display-6 {
     import saveform from "https://cdn.jsdelivr.net/npm/saveform@1";
     import hljs from "https://cdn.jsdelivr.net/npm/highlight.js@11/+esm";
 
-    // Config embedded
     const demos = [
       {
         icon: "search",
@@ -342,14 +332,12 @@ Current time (UTC): ${now()}`;
     const formState = saveform("#task-form", { exclude: '[type="file"]' });
     const messages = [];
     const selectedApis = new Set([0]);
-    
-    // --- Changed: renderSidebar now skips the Google demo (index 0) so it won't show in the left accordion ---
-    // Render API sidebar based on config
+
     function renderSidebar() {
       render(
         demos
           .map((d, i) => ({ demo: d, index: i }))
-          .filter(({ index }) => index !== 0) // <-- skip Google Custom Search here
+          .filter(({ index }) => index !== 0)
           .map(
             ({ demo, index }) => html`
               <div class="accordion-item ${selectedApis.has(index) ? "border border-success" : ""}">
@@ -459,7 +447,6 @@ Current time (UTC): ${now()}`;
       }
     }
 
-    // Add event listeners to example questions
     $exampleQuestions.addEventListener("click", (e) => {
       const $exampleQuestion = e.target.closest(".example-question");
       if ($exampleQuestion) {
@@ -470,7 +457,6 @@ Current time (UTC): ${now()}`;
       }
     });
 
-    // --- Added/Changed: centralize Google enable button behavior (toggle) and update label/state ---
     function updateGoogleButton() {
       const btn = document.getElementById("enable-google-btn");
       if (!btn) return;
@@ -491,7 +477,6 @@ Current time (UTC): ${now()}`;
       } else {
         selectedApis.add(0);
       }
-      // re-render UI pieces impacted by selection
       renderSidebar();
       updateSelection();
       updateGoogleButton();
@@ -553,7 +538,6 @@ Current time (UTC): ${now()}`;
           return;
         }
 
-        // Extract the code inside ```js in the last step
         const code = ((content) => {
           try {
             return [...content.matchAll(/```js(.*?)```/gs)][0].at(-1);
@@ -575,8 +559,8 @@ Current time (UTC): ${now()}`;
         messages.push({ role: "user", name: "result", content: "Running code..." });
         renderSteps(messages);
         const params = {
-          cse: "AIzaSyAOeewhMz85cuaQ7DLuELA_pWRoDfSfJSk",   // hardcoded Google API key
-          cx: "01f8910438f594dd0", // hardcoded Search Engine ID
+          cse: "hardcoded_gemini_api_key",
+          cx: "hardcoded_search_engine_id",
         };
 
         try {
@@ -609,7 +593,6 @@ Current time (UTC): ${now()}`;
       }
     });
 
-    // Define icon and color based on name
     const iconMap = {
       user: "bi-person-fill",
       developer: "bi-code-square",
@@ -627,13 +610,10 @@ Current time (UTC): ${now()}`;
     };
 
     function renderSteps(steps) {
-  // Keep only:
-  // - the user’s question
-  // - the final validator step (that has 🟢 DONE or after retries)
   const visibleSteps = steps.filter((s, i) => {
-    if (s.name === "user") return true;   // always show user prompt
-    if (s.name === "validator" && s.content.includes("🟢")) return true; // final answer
-    return false; // hide everything else
+    if (s.name === "user") return true;
+    if (s.name === "validator" && s.content.includes("🟢")) return true;
+    return false;
   });
 
   render(
@@ -668,20 +648,16 @@ Current time (UTC): ${now()}`;
   );
 }
 
-
-    // Initialize the application
     renderSidebar();
     updateSelection();
     updateGoogleButton();
 
-// ---------------- Splash Screen Logic ----------------
 const splashIcon = document.getElementById("splash-icon");
 const splashMessage = document.getElementById("splash-message");
 const continueBtn = document.getElementById("continue-btn");
 const splashScreen = document.getElementById("splash-screen");
 const mainApp = document.getElementById("main-app");
 
-// Message to show letter by letter
 const introMessage = `Hi,
 I am a Browser-based Multi-Tool Reasoning Model and I can do the following:
 
@@ -691,11 +667,10 @@ I am a Browser-based Multi-Tool Reasoning Model and I can do the following:
 
 function typeWriterEffect(text, element, speed = 30) {
   let i = 0;
-  element.textContent = ""; // clear any old text first
+  element.textContent = "";
   return new Promise((resolve) => {
     function typing() {
       if (i < text.length) {
-        // handle line breaks properly
         if (text.charAt(i) === "\n") {
           element.innerHTML += "<br>";
         } else {
@@ -711,27 +686,22 @@ function typeWriterEffect(text, element, speed = 30) {
   });
 }
 
-// Start typing message after icon click
 splashIcon.addEventListener("click", async () => {
-  splashIcon.style.display = "none"; // hide icon once clicked
+  splashIcon.style.display = "none";
 
   splashMessage.style.fontFamily = "'Inter', sans-serif";
   splashMessage.style.fontSize = "20px";
   splashMessage.style.fontWeight = "bold";
 
-  // typewriter only into splashMessage
   await typeWriterEffect(introMessage, splashMessage, 30);
 
-  // show continue button after typing finishes
   continueBtn.style.display = "inline-block";
 });
 
-// Continue button → hide splash, show app
 continueBtn.addEventListener("click", () => {
   splashScreen.style.display = "none";
   mainApp.style.display = "block";
 });
-
 
   </script>
 </body>
